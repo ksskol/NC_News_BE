@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../db/seeds/app");
+const app = require("../mvc/app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe("404 General Not Found Error", () => {
-  test("404: When presented with a path that doesn't exist", () => {
+  test("404: When path does not exist", () => {
     return request(app)
       .get("/api/incorrect-path")
       .expect(404)
