@@ -8,3 +8,6 @@ To run this project on your computer, you'll need to do a few things:
 PGDATABASE=database_name_here
 
 3. Make sure to keep both .env.test and .env.development files private by adding them to the .gitignore file.
+
+Dependencies: Express
+Dev Dependencies: Supertest, Jest
