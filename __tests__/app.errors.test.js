@@ -22,3 +22,23 @@ describe("404 General Not Found Error", () => {
       });
   });
 });
+
+describe("Errors for article id", () => {
+  test("GET 400: invalid id ", () => {
+    return request(app)
+      .get("/api/articles/two")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+
+  test("GET 404: valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: Article Not found");
+      });
+  });
+});
