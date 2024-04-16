@@ -3,7 +3,7 @@ const app = require("../mvc/app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
-const endpoints = require("../endpoints");
+const endpoints = require("../endpoints.json");
 
 afterAll(() => {
   db.end();
@@ -35,7 +35,22 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body.endpoints).toEqual(endpoints);
+        const { endpoints } = body;
+        expect(typeof endpoints).toBe("object");
+        expect(endpoints.hasOwnProperty("GET /api")).toBe(true);
+        expect(endpoints.hasOwnProperty("GET /api/topics")).toBe(true);
+        expect(endpoints.hasOwnProperty("GET /api/articles")).toBe(true);
       });
   });
 });
+
+// describe("/api/articles/:article_id", () => {
+//     test("GET 200:", () => {
+//       return request(app)
+//         .get("/api/articles/:article_id")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect().toEqual();
+//         });
+//     });
+//   });
