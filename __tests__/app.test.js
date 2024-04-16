@@ -1,8 +1,9 @@
 const request = require("supertest");
-const app = require("../db/seeds/app");
+const app = require("../mvc/app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const endpoints = require("../endpoints");
 
 afterAll(() => {
   db.end();
@@ -26,5 +27,15 @@ describe("/api/topics", () => {
         });
       });
   });
-  
+});
+
+describe("/api", () => {
+  test("GET 200: Returns identical information from the endpoint's JSON", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints);
+      });
+  });
 });
