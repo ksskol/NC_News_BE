@@ -188,3 +188,50 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST 201: Response with an added comment for an article", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "icellusedkars",
+        body: "Need to stay hydrated",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "Need to stay hydrated",
+          article_id: 1,
+          author: "icellusedkars",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("POST 400: The format of the request body is incorrect", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        name: "icellusedkars",
+        body: "Need to stay hydrated",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+  test("POST 400: The username does not exist", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "ksskol",
+        body: "Need to stay hydrated",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+});

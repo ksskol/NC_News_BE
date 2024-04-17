@@ -51,5 +51,20 @@
       "votes": 0,
       "created_at": "2020-11-03T21:00:00.000Z"
     }
-  }
+  },
+  "POST /api/articles/:article_id/comments": {
+		"description": "posts and serves a new comment associated with the provided article ID",
+		"queries": [],
+		"exampleResponse": {
+			"comment":  {
+        "comment_id": 19,
+        "body": "Need to stay hydrated",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2024-04-17T09:44:06.488Z"
+      }
+
+		}
+	}
 }
