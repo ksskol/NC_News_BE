@@ -23,8 +23,8 @@ describe("404 General Not Found Error", () => {
   });
 });
 
-describe("Errors for article id", () => {
-  test("GET 400: invalid id ", () => {
+describe("/api/articles/:article_id", () => {
+  test("GET 400: Invalid id ", () => {
     return request(app)
       .get("/api/articles/two")
       .expect(400)
@@ -33,7 +33,7 @@ describe("Errors for article id", () => {
       });
   });
 
-  test("GET 404: valid but non-existent id", () => {
+  test("GET 404: Valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/777")
       .expect(404)
