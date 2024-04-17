@@ -57,7 +57,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/users", () => {
-  test("", () => {
+  test("GET 200: Return users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
