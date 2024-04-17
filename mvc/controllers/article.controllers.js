@@ -2,6 +2,7 @@ const {
   fetchArticlesById,
   fetchArticles,
   updateVotes,
+  ifQueryExist
 } = require("../models/article.models");
 
 function getArticlesById(req, res, next) {
@@ -17,8 +18,9 @@ function getArticlesById(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  return fetchArticles()
-    .then((articles) => {
+  const { topic } = req.query
+  Promise.all([fetchArticles(topic), ifQueryExist(topic)])
+    .then(([articles]) => {
       return res.status(200).send({ articles });
     })
     .catch((err) => {

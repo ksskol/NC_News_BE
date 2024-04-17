@@ -113,6 +113,31 @@ describe("/api/articles", () => {
   });
 });
 
+describe("GET /api/articles?topic", () => {
+  test("GET 200: Returns all articles by specific topic (mitch)", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+
+        expect(articles.length).toBe(12);
+
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET 400: Invalid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=no")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad Request");
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET 200: Returns with an article object", () => {
     return request(app)
