@@ -27,18 +27,29 @@
     }
   },
   "GET /api/articles/:article_id:": {
-    "description": "serves an objet  from an article based on the provided article ID.",
+    "description": "serves an objet from an article based on the provided article ID.",
     "queries": [],
     "exampleResponse": {
-    "title": "Living in the shadow of a great man",
-    "topic": "mitch",
-    "article_id": 12,
-    "author": "butter_bridge",
-    "body": "I find this existence challenging",
-    "created_at": 1594329060000,
-    "votes": 100,
-    "article_img_url":
-      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "article_id": 12,
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": 1594329060000,
+      "votes": 100,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an object of an articles comments by the given article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment_id": 5,
+      "body": "I hate streaming noses",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 0,
+      "created_at": "2020-11-03T21:00:00.000Z"
     }
   }
 }

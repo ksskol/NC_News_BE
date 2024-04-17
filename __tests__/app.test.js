@@ -7,25 +7,20 @@ const data = require("../db/data/test-data/index");
 const endpoints = require("../endpoints.json");
 
 afterAll(() => {
-  db.end();
+  return db.end();
 });
 
 beforeEach(() => {
   return seed(data);
 });
 
-describe("/api/topics", () => {
-  test("GET 200: Return topics", () => {
+describe("404 General Not Found Error", () => {
+  test("404: When path does not exist", () => {
     return request(app)
-      .get("/api/topics")
-      .expect(200)
+      .get("/api/incorrect-path")
+      .expect(404)
       .then(({ body }) => {
-        const { topics } = body;
-        expect(topics.length).toBe(3);
-        topics.forEach((topic) => {
-          expect(typeof topic.description).toBe("string");
-          expect(typeof topic.slug).toBe("string");
-        });
+        expect(body.msg).toBe("404: Not Found");
       });
   });
 });
@@ -41,6 +36,22 @@ describe("/api", () => {
         expect(endpoints.hasOwnProperty("GET /api")).toBe(true);
         expect(endpoints.hasOwnProperty("GET /api/topics")).toBe(true);
         expect(endpoints.hasOwnProperty("GET /api/articles")).toBe(true);
+      });
+  });
+});
+
+describe("/api/topics", () => {
+  test("GET 200: Return topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        const { topics } = body;
+        expect(topics.length).toBe(3);
+        topics.forEach((topic) => {
+          expect(typeof topic.description).toBe("string");
+          expect(typeof topic.slug).toBe("string");
+        });
       });
   });
 });
@@ -63,6 +74,23 @@ describe("/api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
+  });
+  test("GET 400: Invalid id ", () => {
+    return request(app)
+      .get("/api/articles/two")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+
+  test("GET 404: Valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: Article Not Found");
       });
   });
 });
@@ -88,17 +116,75 @@ describe("/api/articles", () => {
             votes: expect.any(Number),
             comment_count: expect.any(Number),
           });
-          expect(article.body).toBeUndefined(); 
+          expect(article.body).toBeUndefined();
         });
       });
   });
-  test("GET 200: Returns articles sorted by date in descending order",()=>{
+  test("GET 200: Returns articles sorted by date in descending order", () => {
     return request(app)
-    .get("/api/articles")
-    .expect(200)
-    .then(({ body }) => {
-      const { articles } = body;
-      expect(articles).toBeSortedBy("created_at", { descending: true });
-    })
-  })
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200: Returns an array of all comments for the given article_id ", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+
+        expect(comments.length).toBe(11);
+
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("GET 200: Returns with an array of comments served with the most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200: Responds with an empty array if the article does not have any comments", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
+  test("GET 400: Invalid article id", () => {
+    return request(app)
+      .get("/api/articles/incorrect-path/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+  test("GET 404: Valid but non-existent article id", () => {
+    return request(app)
+      .get("/api/articles/777/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: Article Not Found");
+      });
+  });
 });
