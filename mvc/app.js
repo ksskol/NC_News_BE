@@ -5,13 +5,19 @@ const {
   getArticlesById,
   getArticles,
 } = require("./controllers/article.controllers");
+const {
+  getCommentsByArticleId,
+} = require("./controllers/comments.controllers");
 
 const app = express();
 
 app.get("/api", getEndpoints);
+
 app.get("/api/topics", getTopics);
+
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticlesById);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 // General 404
 app.all("*", (req, res, next) => {

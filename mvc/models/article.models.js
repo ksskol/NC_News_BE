@@ -6,15 +6,16 @@ function fetchArticlesById(articleId) {
     .then(({ rows }) => {
       // If the article is not found, it rejects the promise with a message
       if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "404: Article Not found" });
-      } // If an article is found, return the first (and only) row
+        return Promise.reject({ status: 404, msg: "404: Article Not Found" });
+      }
       return rows[0];
     });
 }
 
 function fetchArticles() {
   return db
-    .query(`SELECT 
+    .query(
+      `SELECT 
 				articles.article_id, 
 				articles.title, 
 				articles.topic, 
