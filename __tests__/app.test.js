@@ -306,3 +306,28 @@ describe("PATCH 200: /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE 204: /api/comments/:comment_id", () => {
+  test("DELETE 204: Delete the given comment by comment_id", () => {
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204);
+  });
+  test("DELETE 400: Invalid id", () => {
+    return request(app)
+      .delete("/api/comments/two")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad Request");
+      });
+  });
+  test("DELETE 404: Valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Comment Id Not Found");
+      });
+  });
+
+});
