@@ -7,9 +7,11 @@ const {
 } = require("./controllers/article.controllers");
 const {
   getCommentsByArticleId,
+  postComment,
 } = require("./controllers/comments.controllers");
 
 const app = express();
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 
@@ -18,6 +20,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postComment);
 
 // General 404
 app.all("*", (req, res, next) => {
@@ -35,7 +39,7 @@ app.use((err, req, res, next) => {
 
 // Invalid input syntax
 app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
     res.status(400).send({ msg: "400: Bad Request" });
   }
   next(err);
