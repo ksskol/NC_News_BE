@@ -12,10 +12,8 @@ function fetchArticlesById(articleId) {
     });
 }
 
-function fetchArticles() {
-  return db
-    .query(
-      `SELECT 
+function fetchArticles(topic) {
+  let part_one = `SELECT 
 				articles.article_id, 
 				articles.title, 
 				articles.topic, 
@@ -26,13 +24,35 @@ function fetchArticles() {
 				COUNT(comments.article_id) :: INT AS comment_count 
 			FROM articles
 			LEFT JOIN comments 
-			ON comments.article_id = articles.article_id
-			GROUP BY articles.article_id
-			ORDER BY articles.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+			ON comments.article_id = articles.article_id`;
+
+  let part_two = ` GROUP BY articles.article_id
+  ORDER BY articles.created_at DESC`;
+
+  const queryValues = [];
+
+  if (topic) {
+    part_one += ` WHERE topic=$1`;
+    queryValues.push(topic);
+  }
+
+  part_one += part_two;
+
+  return db.query(part_one, queryValues).then(({ rows }) => {
+    return rows;
+  });
+}
+
+function ifQueryExist(topic) {
+  if (topic) {
+    return db
+      .query(`SELECT * FROM topics WHERE slug=$1`, [topic])
+      .then(({ rows }) => {
+        if (!rows.length) {
+          return Promise.reject({ status: 400, msg: "400: Bad Request" });
+        }
+      });
+  }
 }
 
 function updateVotes(article_id, inc_votes) {
@@ -49,4 +69,9 @@ function updateVotes(article_id, inc_votes) {
     });
 }
 
-module.exports = { fetchArticlesById, fetchArticles, updateVotes };
+module.exports = {
+  fetchArticlesById,
+  fetchArticles,
+  updateVotes,
+  ifQueryExist,
+};

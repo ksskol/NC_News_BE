@@ -57,7 +57,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/users", () => {
-  test("", () => {
+  test("GET 200: Return users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -109,6 +109,31 @@ describe("/api/articles", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET /api/articles?topic", () => {
+  test("GET 200: Returns all articles by specific topic (mitch)", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+
+        expect(articles.length).toBe(12);
+
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET 400: Invalid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=no")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad Request");
       });
   });
 });
