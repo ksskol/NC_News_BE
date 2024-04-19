@@ -26,4 +26,18 @@ function insertComment(article_id, username, body) {
     });
 }
 
-module.exports = { fetchComments, insertComment };
+function deleteCommentById(comment_id){
+  return db
+    .query(
+      `DELETE FROM comments WHERE comment_id=$1
+    RETURNING *;`,
+      [comment_id]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "404: Comment Id Not Found" });
+      }
+    });
+};
+
+module.exports = { fetchComments, insertComment, deleteCommentById};

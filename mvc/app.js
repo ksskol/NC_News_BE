@@ -9,6 +9,7 @@ const {
 const {
   getCommentsByArticleId,
   postComment,
+  deleteComment,
 } = require("./controllers/comments.controllers");
 
 const app = express();
@@ -24,6 +25,7 @@ app.patch("/api/articles/:article_id", patchArticle);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
+app.delete("/api/comments/:comment_id", deleteComment);
 
 // General 404
 app.all("*", (req, res, next) => {
