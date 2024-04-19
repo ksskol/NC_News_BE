@@ -2,7 +2,15 @@ const db = require("../../db/connection");
 
 function fetchArticlesById(articleId) {
   return db
-    .query("SELECT * FROM articles WHERE article_id=$1", [articleId])
+    .query(`SELECT articles.*,
+			COUNT (comments.article_id) :: INT AS comment_count
+		FROM articles 
+		LEFT JOIN comments 
+		ON articles.article_id = comments.article_id
+		WHERE articles.article_id = $1
+		GROUP BY articles.article_id`,
+      [articleId]
+    )
     .then(({ rows }) => {
       // If the article is not found, it rejects the promise with a message
       if (!rows.length) {

@@ -128,6 +128,15 @@ describe("GET /api/articles?topic", () => {
         });
       });
   });
+  test('GET 200: Returns an empty array if a topic exists but there are no articles', () => {
+    return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toEqual([]);
+        });
+});
   test("GET 400: Invalid topic", () => {
     return request(app)
       .get("/api/articles?topic=no")
@@ -172,6 +181,29 @@ describe("/api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("404: Article Not Found");
+      });
+  });
+});
+
+describe("/api/articles/article:id with comment_count", () => {
+  test("GET 200:Returns an article by article_id and adds comment_count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 11
+        });
       });
   });
 });
@@ -326,6 +358,35 @@ describe("PATCH 200: /api/articles/:article_id", () => {
         });
       });
   });
+  test("PATCH 200: (Negative numbers)  Returns an updated article by article_id if ", () => {
+    return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -99 })
+        .expect(200)
+        .then(({ body }) => {
+            const { article } = body
+            expect(article).toEqual({
+                article_id: 1,
+                title: 'Living in the shadow of a great man',
+                topic: 'mitch',
+                author: 'butter_bridge',
+                body: 'I find this existence challenging',
+                created_at: '2020-07-09T20:11:00.000Z',
+                votes: 1,
+                article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+            });
+        });
+});
+test('PATCH 400: Patch object is formatted incorrectly', () => {
+    return request(app)
+        .patch('/api/articles/3')
+        .send({ notVotes: 1 })
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe("400: Bad Request");
+        });
+});
+
   test("PATCH 400: Invalid id ", () => {
     return request(app)
       .get("/api/articles/two")
