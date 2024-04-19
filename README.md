@@ -52,7 +52,7 @@ This will install all the necessary dependencies specified in package.json.
 This will execute the test suite and provide you with the test results.
 
 ---
-### Following these steps should allow you to clone the repository, install dependencies, seed the local database, and run tests successfully. 
+
 
 **Dev dependencies:**
 jest,
