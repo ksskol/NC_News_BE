@@ -84,7 +84,6 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toEqual("400: Bad Request");
       });
   });
-
   test("GET 404: Valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/777")
@@ -210,6 +209,30 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("POST 400: Invalid id ", () => {
+    return request(app)
+      .post("/api/articles/two/comments")
+      .send({
+        username: "icellusedkars",
+        body: "Need to stay hydrated",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+  test("POST 404: Valid but non-existent id", () => {
+    return request(app)
+      .post("/api/articles/777/comments")
+      .send({
+        username: "icellusedkars",
+        body: "Need to stay hydrated",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: Article Not Found");
+      });
+  });
   test("POST 400: The format of the request body is incorrect", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -222,16 +245,64 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toEqual("400: Bad Request");
       });
   });
-  test("POST 400: The username does not exist", () => {
+  test("POST 404: The username does not exist", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send({
         username: "ksskol",
         body: "Need to stay hydrated",
       })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: User Not Found");
+      });
+  });
+});
+
+describe("PATCH 200: /api/articles/:article_id", () => {
+  test("PATCH 200: Returns an updated article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 400: Invalid id ", () => {
+    return request(app)
+      .get("/api/articles/two")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("400: Bad Request");
+      });
+  });
+  test("PATCH 404: Valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("404: Article Not Found");
+      });
+  });
+  test("PATCH 400: Invalid votes", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "one" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Bad Request");
       });
   });
 });
