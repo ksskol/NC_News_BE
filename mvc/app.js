@@ -14,10 +14,10 @@ const {
 const { getUsers } = require("./controllers/users.controllers");
 
 const app = express();
-app.use(express.json());
-
 const cors = require('cors');
+
 app.use(cors());
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 
