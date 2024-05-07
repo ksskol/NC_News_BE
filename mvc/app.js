@@ -16,11 +16,14 @@ const { getUsers } = require("./controllers/users.controllers");
 const app = express();
 app.use(express.json());
 
+const cors = require('cors');
+app.use(cors());
+
 app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
 
-app.get("/api/users/", getUsers);
+app.get("/api/users", getUsers);
 
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticlesById);
